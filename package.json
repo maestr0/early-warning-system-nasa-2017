@@ -6,6 +6,7 @@
     "start": "node ./bin/www"
   },
   "dependencies": {
+    "aws-sdk": "^2.48.0",
     "body-parser": "~1.15.1",
     "clarifai": "^2.1.5",
     "cookie-parser": "~1.4.3",
