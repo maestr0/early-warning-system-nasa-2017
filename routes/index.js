@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var Clarifai = require('clarifai');
+var request = require('request');
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
@@ -66,7 +67,13 @@ function submitImage(imageBase64, callback) {
         }
     );
 }
+<<<<<<< Updated upstream
 function sendNotificationFire() {
+=======
+
+
+function sendNotificationFire(){
+>>>>>>> Stashed changes
     var fireObj = {
         'stationID': '9346',
         'Latitude': '40.7128',
@@ -74,6 +81,15 @@ function sendNotificationFire() {
         'Status': true,
         'StatusDescription': 'Fire is Burning'
     };
+    request.post(
+    'http://johnabsher.pythonanywhere.com/notify',
+    { json: { key: 'value' } },
+    function (error, response, body) {
+        if (!error && response.statusCode == 200) {
+            console.log(body)
+        }
+    }
+);
 }
 
 function sendNotificationNoFire() {
