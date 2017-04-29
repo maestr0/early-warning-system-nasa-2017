@@ -1,5 +1,7 @@
 // Load the AWS SDK for Node.js
 var AWS = require('aws-sdk');
+var notifier = require('../notifier');
+
 
 if (!AWS.config.region) {
     AWS.config.update({
@@ -22,13 +24,13 @@ var params = {
     ],
     QueueUrl: queueURL,
     VisibilityTimeout: 0,
-    WaitTimeSeconds: 20
+    WaitTimeSeconds: 2
 };
 
-function deleteMessageFromSqs(data) {
+function deleteMessageFromSqs(Message) {
     var deleteParams = {
         QueueUrl: queueURL,
-        ReceiptHandle: data.Messages[0].ReceiptHandle
+        ReceiptHandle: Message.ReceiptHandle
     };
     sqs.deleteMessage(deleteParams, function (err, data) {
         if (err) {
@@ -42,6 +44,24 @@ function deleteMessageFromSqs(data) {
 function Worker() {
 };
 
+function sendSMSALert(msg) {
+    notifier.sendSms(msg, [], function(error, message) {
+        if (error) {
+            console.error(error.message);
+        } else {
+            console.log('notification sent: ' + message);
+        }
+    });
+}
+function processMessage(payload) {
+    var message = JSON.parse(payload.Body).Message;
+    console.log("Message: " + message);
+
+    if(message === "warning"){
+        sendSMSALert('Warning. Wild fire in your area. Evacuate immediately.');
+    }
+}
+
 Worker.prototype.process = function () {
     console.log("Checking for SQS messages...");
     sqs.receiveMessage(params, function (err, data) {
@@ -50,7 +70,12 @@ Worker.prototype.process = function () {
         } else {
 
             if (data.Messages && data.Messages.length > 0) {
-                deleteMessageFromSqs(data);
+                data.Messages.forEach(function (Message) {
+                    processMessage(Message);
+                    deleteMessageFromSqs(Message);
+                });
+            } else {
+                console.log("Empty SQS response.");
             }
         }
     });
