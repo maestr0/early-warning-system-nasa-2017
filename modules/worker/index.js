@@ -65,7 +65,7 @@ function processMessage(payload) {
             sendSMSALert('No fire in your area.');
         }
     } catch (e) {
-        console.error("Unsupported message format");
+        console.error("Unsupported message format: " + message);
     }
 }
 

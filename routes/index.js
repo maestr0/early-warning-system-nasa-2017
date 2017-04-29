@@ -9,13 +9,12 @@ router.get('/', function (req, res, next) {
 
 router.post('/api/image', function (req, res, next) {
     var imageBase64 = req.body.image;
+    console.log("calling Clarifai API...");
     submitImage(imageBase64, function (err, data) {
         if (err) {
-            res.status(500).send('error: ' + err);
+            res.status(500).send(JSON.stringify(err));
         } else {
             res.send(JSON.stringify(data));
-
-
         }
     });
 });
@@ -31,40 +30,41 @@ router.get('/api/image', function (req, res, next) {
 
 
         }
-    });Ń
+    });
 });
 
+var api = new Clarifai.App(
+    process.env.CLARIFAI_CLIENT_ID,
+    process.env.CLARIFAI_CLIENT_SECRET
+);
+
 function submitImage(imageBase64, callback) {
-    var api = new Clarifai.App(
-        process.env.CLARIFAI_CLIENT_ID,
-        process.env.CLARIFAI_CLIENT_SECRET
-    );
 
     // predict the contents of an image by passing in a url
-    api.models.predict(Clarifai.GENERAL_MODEL, {base64: imageBase64}).then(
-        function (response) {
-            // console.log(Imgnamed+'this is the camera');
-            for (var i = 0; i < response.outputs[0].data.concepts.length; i++) {
-                console.log(response.outputs[0].data.concepts[i].name);
-                if (response.outputs[0].data.concepts[i].name === 'flame') {
-                    console.log('its hot!');
-                    sendNotificationFire();
-                    callback(null, {'status': 'Fire Is Burning!'});
+    api.models.predict(Clarifai.GENERAL_MODEL, {base64: imageBase64})
+        .then(function (response) {
+                console.log("response from Clarifai OK");
+                for (var i = 0; i < response.outputs[0].data.concepts.length; i++) {
+                    console.log(response.outputs[0].data.concepts[i].name);
+                    if (response.outputs[0].data.concepts[i].name === 'flame') {
+                        console.log('its hot!');
+                        sendNotificationFire();
+                        callback(null, {'status': true});
+                        return;
+                    }
                 }
-                else {
-                    sendNotificationNoFire();
-                    console.log('not fire');
-
-                }
-
+                console.log('not fire');
+                sendNotificationNoFire();
+                callback(null, {'status': false});
+            },
+            function (err) {
+                console.error('resp error: ' + JSON.stringify(err));
+                callback(err, null);
             }
-            callback(null, {'status': 'No Fire Here'});
-        }
-        ,
-        function (err) {
-            console.error(err + 'error');
-        }
-    );
+        ).catch(function (err) {
+        console.error('promise error: ' + JSON.stringify(err));
+        callback(err, null);
+    });
 }
 function sendNotificationFire() {
     var fireObj = {

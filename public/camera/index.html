@@ -1,37 +1,75 @@
 <html>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-<script>
-    $(document).ready(function () {
-        $("button").click(function () {
-            $.post("/api/image", {image: $("#Imgname").val()}, function (data, status) {
-                console.log(data);
-                $("#fireStat").html(data);
-            });
-        });
-    });
-</script>
+
 <title>SpaceApps</title>
 </head>
 <body>
-<h1>HEllO WORLD</h1>
-<form name="myForm" method="GET" action="/api/image" onsubmit="validateForm()">
-    Name: <input id="Imgname" type="text" name="Imgname">
-    <input value="Submit">
-</form>
+<div class="container">
+    <h1 id="fireStat"></h1>
+    <br/>
+    <div class="camera">
+        <video id="video">Video stream not available.</video>
+    </div>
+    <canvas id="canvas" style="display: none;">
+    </canvas>
+    <div class="output">
 
-<button>Check Fire Status</button>
-<h1 id="fireStat"></h1>
-<br/><br/><br/><br/>
-<div class="camera">
-    <video id="video">Video stream not available.</video>
-    <button id="startbutton">Take photo</button>
-</div>
-<canvas id="canvas">
-</canvas>
-<div class="output">
-    <textarea id="base64"></textarea>
+    </div>
+
+    <div class="statusPanel">
+        <button id="startbutton">CHECK FIRE SITUATION</button>
+        <span class="status noFire">STATUS: NO FIRE</span>
+        <span class="status fire">STATUS: FIRE</span>
+        <p class=" updated">LAST UPDATED: N/A</p>
+    </div>
+
 </div>
 
+
+<style>
+    .status.fire {
+        display: none;
+        color: red;
+    }
+
+    .statusPanel {
+        width: 70%;
+        margin: auto;
+    }
+
+    .status {
+        float: right;
+        margin-top: 50px;
+        color: green;
+        font-size: 40px;
+        font-family: Futura;
+    }
+
+    .updated {
+        float: right;
+        margin-top: 20px;
+    }
+
+    video {
+        background: black;
+        width: 70%;
+    }
+
+    #startbutton {
+        float: left;
+        margin-top: 50px;
+        width: 200px;
+        height: 100px;
+        color: red;
+        font-size: 20px;
+        font-family: Futura;
+        background: black;
+    }
+
+    .container {
+        text-align: center;
+    }
+</style>
 <script>
 
     (function () {
@@ -138,7 +176,20 @@
                 context.drawImage(video, 0, 0, width, height);
 
                 var data = canvas.toDataURL('image/png').replace(/^data:image\/(png|jpg);base64,/, "");
-                $("#Imgname").val(data);
+
+
+                $.post("/api/image", {image: data}, function (data, status) {
+                    console.log(data);
+                    if (data.status) {
+                        $(".status.fire").show();
+                        $(".status.noFire").hide();
+                    } else {
+                        $(".status.noFire").show();
+                        $(".status.fire").hide();
+                    }
+
+                    $(".updated").text("LAST UPDATED: " + new Date());
+                });
             } else {
 //                clearphoto();
             }
