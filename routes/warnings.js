@@ -10,6 +10,7 @@ router.get('/', function(req, res, next) {
 router.get('/send', function(req, res, next) {
     notifier.sendSms('Warning. Wild fire in your area. Evacuate immediately.', [], function(error, message) {
         if (error) {
+            console.error(error.message);
             res.status(500).send('error: ' + error);
         } else {
             res.send('notification sent: ' + message);
