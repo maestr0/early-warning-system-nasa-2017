@@ -9,6 +9,8 @@ require('dotenv').config()
 var routes = require('./routes/index');
 var warnings = require('./routes/warnings');
 
+var worker = require('./modules/worker');
+
 var app = express();
 
 // view engine setup
@@ -57,5 +59,6 @@ app.use(function(err, req, res, next) {
   });
 });
 
+worker.start();
 
 module.exports = app;
