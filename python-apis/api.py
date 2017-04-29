@@ -10,10 +10,11 @@ api = Api(app)
 #parser = reqparse.RequestParser()
 #parser.add_argument('data')
 
-key_id='AKIAJIYXSO4H2LPLEFJA'
-secret_key='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'
-region_name='us-west-2'
-arn='arn:aws:sns:us-west-2:572892346531:natural_disasters'
+import imp
+filename='.credentials'
+f = open(filename)
+cfg = imp.load_source('data', '', f)
+f.close()
 
 class push_msg(object):
     def __init__(self, region_name, key_id, secret_key, topic_arn):
@@ -55,12 +56,14 @@ class push_msg(object):
         if 'default' not in jst.keys():
             jst['default']='None'
         jst=json.dumps(jst)
+        with open("sent_internal.log", "a") as file:
+            file.write(jst+'\n')
         return(jst)
     
     def push(self, js):
         return(self.__push_msg__(self.client, js, self.topic_arn))
 		
-msg=push_msg(region_name, key_id, secret_key, arn)
+msg=push_msg(cfg.region_name, cfg.key_id, cfg.secret_key, cfg.arn)
 
 sample_data=json.JSONEncoder().encode({
             "disaster": {
@@ -76,7 +79,10 @@ class notify(Resource):
     def get(self):
         return(msg.push(sample_data))
     def post(self):
-        return(msg.push(json.dumps(request.json)), 201)
+        data=json.dumps(request.json)
+        with open("sent.log", "a") as file:
+            file.write(data+'\n')
+        return(msg.push(data), 201)
 		
 ##
 ## Actually setup the Api resource routing here
