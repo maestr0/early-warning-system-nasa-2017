@@ -1,1 +1,28 @@
-<h1>test</h1>
+<!DOCTYPE html>
+<html>
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script>
+$(document).ready(function(){
+    $("button").click(function(){
+        $.get("/api/image?Imgname="+$("#Imgname").val(), function(data, status){
+        	console.log(data);
+        	$("#fireStat").html(data);
+        });
+        
+    });
+});
+</script>
+	<title>SpaceApps</title>
+</head>
+<body>
+<h1>HEllO WORLD</h1>
+	<form name="myForm" method="GET" action="/api/image" onsubmit="validateForm()">
+Name: <input id="Imgname" type="text" name="Imgname">
+<input value="Submit">
+</form>
+
+<button>Check Fire Status</button>
+<h1 id="fireStat"></h1>
+</body>
+</html>
