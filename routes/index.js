@@ -15,7 +15,7 @@ router.post('/api/image', function (req, res, next) {
         if (err) {
             res.status(500).send(JSON.stringify(err));
         } else {
-            res.send(JSON.stringify(data));
+            res.send(data);
         }
     });
 });
@@ -66,7 +66,6 @@ function submitImage(imageBase64, callback) {
         callback(err, null);
     });
 }
-
 
 function sendNotificationFire() {
     var fireObj = {

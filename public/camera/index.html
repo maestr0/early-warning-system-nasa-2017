@@ -20,6 +20,8 @@
         <button id="startbutton">CHECK FIRE SITUATION</button>
         <span class="status noFire">STATUS: NO FIRE</span>
         <span class="status fire">STATUS: FIRE</span>
+        <span class="status fire">STATUS: FIRE</span>
+        <span class="status updating">DOING VERY VERY COMPLICATED CALCULATIONS...WAIT</span>
         <p class=" updated">LAST UPDATED: N/A</p>
     </div>
 
@@ -35,6 +37,11 @@
     .statusPanel {
         width: 70%;
         margin: auto;
+    }
+
+    .status.updating {
+        display: none;
+        color: red;
     }
 
     .status {
@@ -177,9 +184,14 @@
 
                 var data = canvas.toDataURL('image/png').replace(/^data:image\/(png|jpg);base64,/, "");
 
+                $(".status.updating").toggle();
+
+                $(".status.noFire").hide();
+                $(".status.fire").hide();
 
                 $.post("/api/image", {image: data}, function (data, status) {
                     console.log(data);
+                    $(".status.updating").toggle();
                     if (data.status) {
                         $(".status.fire").show();
                         $(".status.noFire").hide();
