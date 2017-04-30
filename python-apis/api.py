@@ -90,6 +90,7 @@ sample_data=json.JSONEncoder().encode({
             })
 
 from geopy import distance as distance
+import requests
 def getclosest(lat, lon):
     fires=pd.read_csv("https://firms.modaps.eosdis.nasa.gov/active_fire/viirs/text/VNP14IMGTDL_NRT_USA_contiguous_and_Hawaii_24h.csv")
     fires['gc_dist']=fires[['latitude','longitude']].apply(lambda x: distance.distance((lat, lon),(x[0],x[1])).km, axis=1)
@@ -110,14 +111,32 @@ class notify(Resource):
 class nearest(Resource):
     def get(self):
         args = parser.parse_args()
-        print(args)
         return(getclosest(args['lat'],args['lon']))
 
+maxdist=80
+class chances(Resource):
+    def get(self):
+        args = parser.parse_args()
+        dist=getclosest(args['lat'],args['lon'])
+        prop=1-dist/maxdist
+        forecast=requests.get('https://api.weather.gov/points/{0},{1}/forecast'.format(args['lat'],args['lon']))
+        forecast=json.loads(forecast.text)
+        f=forecast['properties']['periods'][0]['detailedForecast']
+        try:
+            f2=re.search('Chance of precipitation is ..\%', f).group(0)
+            prec=(float(f2[-3:-1])/100)
+        except:
+            prec=0
+        prop*=1-prec
+        if prop<0:
+            prop=0
+        return(prop)
 ##
 ## Actually setup the Api resource routing here
 ##
 api.add_resource(notify, '/notify')
 api.add_resource(nearest, '/nearest')
+api.add_resource(chances, '/chances')
 
 if __name__ == '__main__':
     app.run(debug=True)
