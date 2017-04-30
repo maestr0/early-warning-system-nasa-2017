@@ -20,7 +20,7 @@
         <button id="startbutton">CHECK FIRE SITUATION</button>
         <span class="status noFire">STATUS: NO FIRE</span>
         <span class="status fire">STATUS: FIRE</span>
-        <span class="status fire">STATUS: FIRE</span>
+        <span class="status alien">STATUS: ALIEN INVASION</span>
         <span class="status updating">DOING VERY VERY COMPLICATED CALCULATIONS...WAIT</span>
         <p class=" updated">LAST UPDATED: N/A</p>
     </div>
@@ -30,6 +30,11 @@
 
 <style>
     .status.fire {
+        display: none;
+        color: red;
+    }
+
+    .status.alien {
         display: none;
         color: red;
     }
@@ -188,16 +193,27 @@
 
                 $(".status.noFire").hide();
                 $(".status.fire").hide();
+                $(".status.alien").hide();
 
                 $.post("/api/image", {image: data}, function (data, status) {
                     console.log(data);
                     $(".status.updating").toggle();
-                    if (data.status) {
+                    if (data.status == 3) {
+                        //fire
                         $(".status.fire").show();
                         $(".status.noFire").hide();
-                    } else {
+                        $(".status.alien").hide();
+                    } else if (data.status == 4) {
+                        // alien invasion
+                        $(".status.noFire").hide();
+                        $(".status.fire").hide();
+                        $(".status.alien").show();
+                    }
+                    else {
+                        // nothing
                         $(".status.noFire").show();
                         $(".status.fire").hide();
+                        $(".status.alien").hide();
                     }
 
                     $(".updated").text("LAST UPDATED: " + new Date());
