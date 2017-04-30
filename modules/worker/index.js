@@ -45,7 +45,7 @@ function Worker() {
 };
 
 function sendSMSALert(msg) {
-    notifier.sendSms(msg, [], function(error, message) {
+    notifier.sendSms(msg, [], function (error, message) {
         if (error) {
             console.error(error.message);
         } else {
@@ -57,8 +57,15 @@ function processMessage(payload) {
     var message = JSON.parse(payload.Body).Message;
     console.log("Message: " + message);
 
-    if(message === "warning"){
-        sendSMSALert('Warning. Wild fire in your area. Evacuate immediately.');
+    try {
+        var m = JSON.parse(message);
+        if (m.Status) {
+            sendSMSALert('Warning. Wild fire in your area. Evacuate immediately.');
+        } else {
+            sendSMSALert('No fire in your area.');
+        }
+    } catch (e) {
+        console.error("Unsupported message format: " + message);
     }
 }
 
