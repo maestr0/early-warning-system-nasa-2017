@@ -67,13 +67,12 @@ function submitImage(imageBase64, callback) {
         }
     );
 }
-<<<<<<< Updated upstream
-function sendNotificationFire() {
-=======
+
+
+
 
 
 function sendNotificationFire(){
->>>>>>> Stashed changes
     var fireObj = {
         'stationID': '9346',
         'Latitude': '40.7128',
