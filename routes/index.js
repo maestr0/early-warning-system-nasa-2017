@@ -20,7 +20,6 @@ router.post('/api/image', function (req, res, next) {
     });
 });
 
-
 router.get('/api/image', function (req, res, next) {
     var Imgnamed = req.query.Imgname;
     submitImage(Imgnamed, function (err, data) {
@@ -67,6 +66,8 @@ function submitImage(imageBase64, callback) {
         callback(err, null);
     });
 }
+
+
 function sendNotificationFire() {
     var fireObj = {
         'stationID': '9346',
@@ -78,7 +79,7 @@ function sendNotificationFire() {
 
     request.post(
         'http://johnabsher.pythonanywhere.com/notify',
-        { json: fireObj },
+        {json: fireObj},
         function (error, response, body) {
             if (!error && response.statusCode == 200) {
                 console.log(body)
@@ -98,7 +99,7 @@ function sendNotificationNoFire() {
 
     request.post(
         'http://johnabsher.pythonanywhere.com/notify',
-        { json: noFireObj },
+        {json: noFireObj},
         function (error, response, body) {
             if (!error && response.statusCode == 200) {
                 console.log(body)
@@ -107,6 +108,5 @@ function sendNotificationNoFire() {
     );
 
 }
-
 
 module.exports = router;
