@@ -17,9 +17,11 @@
     </div>
 
     <div class="statusPanel">
-        <button id="startbutton">CHECK FIRE SITUATION</button>
+        <button id="startbutton">CHECK SITUATION</button>
         <span class="status noFire">STATUS: NO FIRE</span>
         <span class="status fire">STATUS: FIRE</span>
+        <span class="status alien">STATUS: ALIEN INVASION</span>
+        <span class="status updating">DOING VERY VERY COMPLICATED CALCULATIONS...WAIT</span>
         <p class=" updated">LAST UPDATED: N/A</p>
     </div>
 
@@ -32,9 +34,19 @@
         color: red;
     }
 
+    .status.alien {
+        display: none;
+        color: red;
+    }
+
     .statusPanel {
         width: 70%;
         margin: auto;
+    }
+
+    .status.updating {
+        display: none;
+        color: red;
     }
 
     .status {
@@ -177,15 +189,31 @@
 
                 var data = canvas.toDataURL('image/png').replace(/^data:image\/(png|jpg);base64,/, "");
 
+                $(".status.updating").toggle();
+
+                $(".status.noFire").hide();
+                $(".status.fire").hide();
+                $(".status.alien").hide();
 
                 $.post("/api/image", {image: data}, function (data, status) {
                     console.log(data);
-                    if (data.status) {
+                    $(".status.updating").toggle();
+                    if (data.status == 3) {
+                        //fire
                         $(".status.fire").show();
                         $(".status.noFire").hide();
-                    } else {
+                        $(".status.alien").hide();
+                    } else if (data.status == 4) {
+                        // alien invasion
+                        $(".status.noFire").hide();
+                        $(".status.fire").hide();
+                        $(".status.alien").show();
+                    }
+                    else {
+                        // nothing
                         $(".status.noFire").show();
                         $(".status.fire").hide();
+                        $(".status.alien").hide();
                     }
 
                     $(".updated").text("LAST UPDATED: " + new Date());

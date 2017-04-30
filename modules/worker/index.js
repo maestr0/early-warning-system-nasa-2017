@@ -60,9 +60,9 @@ function processMessage(payload) {
     try {
         var m = JSON.parse(message);
         if (m.Status) {
-            sendSMSALert('Warning. Wild fire in your area. Evacuate immediately.');
+            sendSMSALert(m.StatusDescription);
         } else {
-            sendSMSALert('No fire in your area.');
+            //sendSMSALert('No warnings in your area.');
         }
     } catch (e) {
         console.error("Unsupported message format: " + message);
