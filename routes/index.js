@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var Clarifai = require('clarifai');
+var request = require('request');
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
@@ -74,6 +75,16 @@ function sendNotificationFire() {
         'Status': true,
         'StatusDescription': 'Fire is Burning'
     };
+
+    request.post(
+        'http://johnabsher.pythonanywhere.com/notify',
+        { json: fireObj },
+        function (error, response, body) {
+            if (!error && response.statusCode == 200) {
+                console.log(body)
+            }
+        }
+    );
 }
 
 function sendNotificationNoFire() {
@@ -84,6 +95,16 @@ function sendNotificationNoFire() {
         'Status': false,
         'StatusDescription': 'Fire is Not Burning'
     };
+
+    request.post(
+        'http://johnabsher.pythonanywhere.com/notify',
+        { json: noFireObj },
+        function (error, response, body) {
+            if (!error && response.statusCode == 200) {
+                console.log(body)
+            }
+        }
+    );
 
 }
 
