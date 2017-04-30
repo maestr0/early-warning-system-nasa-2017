@@ -57,7 +57,7 @@ function submitImage(imageBase64, callback) {
                         callback(null, {'status': 3});
                         return;
                     }
-
+                    // alien
                     if (response.outputs[0].data.concepts[i].name === 'sculpture') {
                         console.log('alien invasion');
                         sendNotificationAlien();
@@ -85,7 +85,7 @@ function sendNotificationFire() {
         'Latitude': '40.7128',
         'Longitude': '74.0059',
         'Status': true,
-        'StatusDescription': 'Fire is Burning'
+        'StatusDescription': 'Warning. Wild fire in your area. Evacuate immediately. Are you in safe place? Reply YES or NO if you need help'
     };
 
     request.post(
@@ -105,7 +105,7 @@ function sendNotificationAlien() {
         'Latitude': '40.7128',
         'Longitude': '74.0059',
         'Status': true,
-        'StatusDescription': 'Alien invasion started'
+        'StatusDescription': 'Alien invasion started. Are you in safe place? Reply YES or NO if you need help'
     };
 
     request.post(
